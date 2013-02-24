@@ -49,7 +49,7 @@ var ECDSA = {
     var e = BigInteger.fromByteArrayUnsigned(hash);
 
     do {
-      var k = ECDSA.getBigRandom(n);
+      var k = this.getBigRandom(n);
       var G = ecparams.getG();
       var Q = G.multiply(k);
       var r = Q.getX().toBigInteger().mod(n);
@@ -57,13 +57,13 @@ var ECDSA = {
 
     var s = k.modInverse(n).multiply(e.add(d.multiply(r))).mod(n);
 
-    return ECDSA.serializeSig(r, s);
+    return this.serializeSig(r, s);
   },
 
   verify: function (hash, sig, pubkey) {
     var r,s;
     if (util.isArray(sig)) {
-      var obj = ECDSA.parseSig(sig);
+      var obj = this.parseSig(sig);
       r = obj.r;
       s = obj.s;
     } else if ("object" === typeof sig && sig.r && sig.s) {
@@ -83,7 +83,7 @@ var ECDSA = {
     }
     var e = BigInteger.fromByteArrayUnsigned(hash);
 
-    return ECDSA.verifyRaw(e, r, s, Q);
+    return this.verifyRaw(e, r, s, Q);
   },
 
   verifyRaw: function (e, r, s, Q) {
@@ -252,11 +252,12 @@ var ECDSA = {
     var Q = implShamirsTrick(R, s, G, eNeg).multiply(rInv);
 
     Q.validate();
-    if (!ECDSA.verifyRaw(e, r, s, Q)) {
+    if (!this.verifyRaw(e, r, s, Q)) {
       throw "Pubkey recovery unsuccessful";
     }
 
-    var pubKey = new Bitcoin.ECKey();
+    var ECKey = require('./eckey'); // Sync operation!
+    var pubKey = new ECKey();
     pubKey.pub = Q;
     return pubKey;
   },
@@ -276,7 +277,7 @@ var ECDSA = {
   {
     for (var i = 0; i < 4; i++) {
       try {
-        var pubkey = Bitcoin.ECDSA.recoverPubKey(r, s, hash, i);
+        var pubkey = this.recoverPubKey(r, s, hash, i);
         if (pubkey.getBitcoinAddress().toString() == address) {
           return i;
         }
@@ -287,4 +288,3 @@ var ECDSA = {
 };
 
 module.exports = ECDSA;
-

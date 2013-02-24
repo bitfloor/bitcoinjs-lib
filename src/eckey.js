@@ -11,6 +11,7 @@ var ecparams = sec("secp256k1");
 
 // input can be nothing, array of bytes, hex string, or base58 string
 var ECKey = function (input) {
+
   if (!(this instanceof ECKey)) {
     return new ECKey(input);
   }
