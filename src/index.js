@@ -24,6 +24,7 @@ var endian = function (n) {
 
 module.exports = {
     Address: require('./address'),
+    Message: require('./message'),
     Key: require('./eckey'),
     BigInteger: require('./jsbn/jsbn'),
     Script: require('./script'),
